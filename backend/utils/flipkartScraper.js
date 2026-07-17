@@ -1,25 +1,26 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 const cheerio = require("cheerio");
 
 let PAGE_URL = "https://www.flipkart.com/search?q=";
 
 const flipkartScraper = async (searchQuery) => {
   const searchUrl = PAGE_URL + encodeURIComponent(searchQuery);
+
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH ||
+    (await chromium.executablePath());
+
   const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--no-first-run",
-      "--no-zygote",
-      "--single-process",
-    ],
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath,
+    headless: chromium.headless,
   });
+
   const page = await browser.newPage();
-  await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  );
 
   await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
   const html = await page.content();
@@ -60,7 +61,7 @@ const flipkartScraper = async (searchQuery) => {
     imageUrl = $(element).find("img.DByuf4").attr("src") || null;
 
     if (!name || !price || !productUrl || !imageUrl) return;
-    
+
     // Only push if essentials exist
     if (name && price && productUrl && imageUrl) {
       products.push({
@@ -70,7 +71,7 @@ const flipkartScraper = async (searchQuery) => {
         productUrl,
         imageUrl,
         source: "Flipkart",
-        searchQuery, // keep original search term
+        searchQuery,
       });
     }
   });
