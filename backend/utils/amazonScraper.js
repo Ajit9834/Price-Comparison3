@@ -6,8 +6,17 @@ let PAGE_URL = "https://www.amazon.in/s?k=";
 const amazonScraper = async (searchQuery) => {
   const searchUrl = PAGE_URL + encodeURIComponent(searchQuery);
   const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox"]
+    headless: true,
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+    ],
   });
   const page = await browser.newPage();
   await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");

@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "postinstall": "npx puppeteer browsers install chrome",
+    "postinstall": "node -e \"const { execSync } = require('child_process'); try { execSync('npx puppeteer browsers install chrome', { stdio: 'inherit', env: { ...process.env, PUPPETEER_CACHE_DIR: process.env.PUPPETEER_CACHE_DIR || '/opt/render/.cache/puppeteer' } }); } catch(e) { console.warn('Chrome install failed, will rely on system chrome or PUPPETEER_EXECUTABLE_PATH'); }\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
