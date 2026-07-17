@@ -1,5 +1,4 @@
-const puppeteer = require("puppeteer-core");
-const chromium = require("@sparticuz/chromium");
+const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 
 let PAGE_URL = "https://www.amazon.in/s?k=";
@@ -7,14 +6,18 @@ let PAGE_URL = "https://www.amazon.in/s?k=";
 const amazonScraper = async (searchQuery) => {
   const searchUrl = PAGE_URL + encodeURIComponent(searchQuery);
 
-  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH ||
-    (await chromium.executablePath());
-
   const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath,
-    headless: chromium.headless,
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+      "--disable-extensions",
+    ],
   });
 
   const page = await browser.newPage();
