@@ -5,8 +5,12 @@ let PAGE_URL = "https://www.amazon.in/s?k=";
 
 const amazonScraper = async (searchQuery) => {
   const searchUrl = PAGE_URL + encodeURIComponent(searchQuery);
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox"]
+  });
   const page = await browser.newPage();
+  await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
   await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
   const html = await page.content();
@@ -50,7 +54,9 @@ const amazonScraper = async (searchQuery) => {
 module.exports = amazonScraper;
 
 // Example run
-(async () => {
-  const results = await amazonScraper("books");
-  console.log(results);
-})();
+if (require.main === module) {
+  (async () => {
+    const results = await amazonScraper("books");
+    console.log(results);
+  })();
+}

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an instance of axios with a base URL
 const api = axios.create({
-  baseURL: 'https://price-comparison-of-amazon-and-flipkart.onrender.com/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
 });
 
 // Add a request interceptor to include the JWT token

@@ -5,8 +5,12 @@ let PAGE_URL = "https://www.flipkart.com/search?q=";
 
 const flipkartScraper = async (searchQuery) => {
   const searchUrl = PAGE_URL + encodeURIComponent(searchQuery);
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox"]
+  });
   const page = await browser.newPage();
+  await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
   await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
   const html = await page.content();
@@ -68,7 +72,9 @@ const flipkartScraper = async (searchQuery) => {
 module.exports = flipkartScraper;
 
 // Example test run
-(async () => {
-  const results = await flipkartScraper("macbook");
-  console.log(results);
-})();
+if (require.main === module) {
+  (async () => {
+    const results = await flipkartScraper("macbook");
+    console.log(results);
+  })();
+}
